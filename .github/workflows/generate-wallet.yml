@@ -23,6 +23,10 @@ on:
         description: "Number of headstarts"
         required: true
         default: 0
+      eventcoins:
+        description: "Number of eventcoins"
+        required: true
+        default: 0
 
 jobs:
   generate-wallet:
@@ -38,35 +42,10 @@ jobs:
         GAMECOINS=${{ github.event.inputs.gamecoins }}
         SCOREBOOSTERS=${{ github.event.inputs.scoreboosters }}
         HEADSTARTS=${{ github.event.inputs.headstarts }}
+        EVENTCOINS=${{ github.event.inputs.eventcoins }}
 
-        # Create the wallet.json file with the input data
-        cat <<EOF > wallet.json
-        {
-          "patchVersion": 0,
-          "currencies": {
-            "3": {"value": $HOVERBOARDS, "expirationType": 0},
-            "2": {"value": $GAMEKEYS, "expirationType": 0},
-            "1": {"value": $GAMECOINS, "expirationType": 0},
-            "20": {"value": 0, "expirationType": 0},
-            "5": {"value": $SCOREBOOSTERS, "expirationType": 0},
-            "4": {"value": $HEADSTARTS, "expirationType": 0},
-            "23": {"value": 0, "expirationType": 0},
-            "24": {"value": 0, "expirationType": 0},
-            "22": {"value": 0, "expirationType": 0},
-            "21": {"value": 0, "expirationType": 0},
-            "6": {"value": 0, "expirationValue": 0, "expirationType": 1}
-          },
-          "lootboxQueue": {"unopenedLootboxes": []},
-          "currencyAllowedInRun": {"5": true, "4": true},
-          "lootBoxesOpened": {
-            "token_box": 0,
-            "mystery_box": 0,
-            "mini_mystery_box": 0,
-            "super_mystery_box": 0
-          },
-          "ownedOnlyBuyOnceProducts": ["free_token_box"]
-        }
-        EOF
+        # Create the wallet.json file in one line
+        echo "{\"version\":2,\"data\":\"{\\\"lastSaved\\\":\\\"\\\",\\\"patchVersion\\\":0,\\\"currencies\\\":{\\\"1\\\":{\\\"value\\\":$GAMECOINS},\\\"2\\\":{\\\"value\\\":$GAMEKEYS},\\\"3\\\":{\\\"value\\\":$HOVERBOARDS},\\\"4\\\":{\\\"value\\\":$HEADSTARTS},\\\"5\\\":{\\\"value\\\":$SCOREBOOSTERS},\\\"6\\\":{\\\"value\\\":$EVENTCOINS,\\\"expirationValue\\\":99999999999999,\\\"expirationType\\\":1}},\\\"lootboxQueue\\\":{\\\"unopenedLootboxes\\\":{\\\"0\\\":[],\\\"2\\\":[]}},\\\"currencyAllowedInRun\\\":{\\\"5\\\":true,\\\"4\\\":true},\\\"lootBoxesOpened\\\":{\\\"mini_mystery_box\\\":3,\\\"mystery_box\\\":7,\\\"token_box\\\":16,\\\"super_mystery_box\\\":5},\\\"ownedOnlyBuyOnceProducts\\\":[\\\"free_token_box\\\",\\\"multiplier_pack\\\",\\\"speed_crew\\\"]}\"}" > wallet.json
 
     - name: Show wallet.json
       run: cat wallet.json
@@ -74,6 +53,6 @@ jobs:
     - name: Upload wallet.json as artifact
       uses: actions/upload-artifact@v3
       with:
-        name: wallet-json
+        name: wallet
         path: wallet.json
         
